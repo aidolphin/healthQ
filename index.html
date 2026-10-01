@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#143f38">
+<meta name="description" content="HealthQ: understand your food and track your daily nutrition.">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HealthQ">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./assets/icon-192.png">
+<link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./styles.css">
+<title>HealthQ · Food, clearly</title>
+</head>
+<body class="is-loading">
+<div class="skeleton" aria-hidden="true">
+  <div class="sk-row w40"></div><div class="sk-card"></div>
+  <div class="sk-row w60"></div><div class="sk-card"></div>
+</div>
+<div id="bootStatus" class="sr-only" role="status" aria-live="polite">Loading the food library</div>
+<a class="skip" href="#content">Skip to content</a>
+<header>
+<div class="brand">
+<span>HealthQ<small>Food, clearly</small>
+</span>
+</div>
+<button id="install" class="install">Install app</button>
+</header>
+<main id="content">
+<section class="hero">
+<div>
+<span class="eyebrow">WELCOME TO HEALTHQ</span>
+<h1>A little clarity<br>at every meal.</h1>
+<p>Know what's on your plate.</p>
+<button id="start" class="primary">Explore foods <span aria-hidden="true">↗</span>
+</button>
+</div>
+<div class="hero-art" aria-hidden="true">
+<div class="art-circle">🥗</div>
+<div class="art-label">Your food, understood.</div>
+</div>
+</section>
+<nav class="tabs" role="tablist" aria-label="Sections"><button type="button" role="tab" data-tab="discover" id="tab-discover" aria-controls="panel-discover" aria-selected="true" tabindex="0">Discover</button><button type="button" role="tab" data-tab="calc" id="tab-calc" aria-controls="panel-calc" aria-selected="false" tabindex="-1">Food calculator</button><button type="button" role="tab" data-tab="today" id="tab-today" aria-controls="panel-today" aria-selected="false" tabindex="-1">My day</button><button type="button" role="tab" data-tab="health" id="tab-health" aria-controls="panel-health" aria-selected="false" tabindex="-1">My health</button><button type="button" role="tab" data-tab="more" id="tab-more" aria-controls="panel-more" aria-selected="false" tabindex="-1">Explore more</button>
+<button type="button" role="tab" data-tab="account" id="tab-account" aria-controls="panel-account" aria-selected="false" tabindex="-1">Account</button></nav>
+<section id="calc" role="tabpanel" aria-labelledby="tab-calc" tabindex="0" class="panel">
+<div class="section-head">
+<div>
+<span class="eyebrow">FOOD CALCULATOR</span>
+<h2>How much are you eating?</h2>
+<p>Pick a food, set the amount, see the calories.</p>
+</div>
+</div>
+<div class="layout calc-layout">
+<div class="surface calc-search">
+<label class="field-label" for="calcQuery">Find a food</label>
+<input id="calcQuery" type="search" autocomplete="off" placeholder="Type dal, apple, अण्डा…">
+<div class="chips" id="calcCategories" aria-label="Food categories">
+</div>
+<div id="calcResults" aria-live="polite">
+</div>
+</div>
+<aside class="surface calc-result">
+<span class="eyebrow">YOUR PORTION</span>
+<div id="calcSelection" class="empty">Search and pick a food to calculate its calories.</div>
+</aside>
+</div>
+</section>
+<section id="discover" role="tabpanel" aria-labelledby="tab-discover" tabindex="0" class="panel">
+<div class="section-head">
+<div>
+<span class="eyebrow">FOOD LIBRARY</span>
+<h2>What’s on your plate?</h2>
+<p>Search <span id="discoverCount">the food library</span> in English or नेपाली.</p>
+</div>
+<span class="count" id="count">
+</span>
+</div>
+<div class="layout">
+<div class="surface">
+<label class="field-label" for="query">Find a food</label>
+<input id="query" type="search" autocomplete="off" placeholder="Search dal, apple, अण्डा…">
+<div class="chips" id="categories" aria-label="Food categories">
+</div>
+<div id="results" aria-live="polite">
+</div>
+</div>
+<aside class="surface">
+<span class="eyebrow">PORTION CHECKER</span>
+<h3>Make it yours</h3>
+<div id="selection" class="empty">Select a food to see its nutrients for your portion.</div>
+</aside>
+</div>
+</section>
+<section id="today" role="tabpanel" aria-labelledby="tab-today" tabindex="0" class="panel hidden">
+<div class="section-head">
+<div>
+<span class="eyebrow">MY DAY</span>
+<h2>Today</h2>
+<p>Goals, meals and progress for the day you pick.</p>
+</div>
+<div class="head-actions">
+<input id="dayPicker" type="date" aria-label="Pick a day to review">
+
+</div>
+</div>
+<div class="day-top">
+<div class="surface day-rings">
+<div class="surface-head"><h3>Progress</h3><span class="fine" id="ringNote">vs your goals</span></div>
+<div class="rings" id="rings"></div>
+<div class="ring-legend" id="ringLegend"></div>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>Remaining today</h3><span class="fine" id="remCal"></span></div>
+<div id="remaining"></div>
+</div>
+</div>
+<div class="day-cols">
+<div class="surface">
+<div class="surface-head"><h3>Meals</h3><span class="fine" id="mealTotal"></span></div>
+<div id="mealCards"></div>
+</div>
+<aside class="day-side">
+<div class="surface">
+<div class="surface-head"><h3>Food goals</h3><button id="editGoals" class="link-btn">Edit</button></div>
+<div id="goalBars"></div>
+<button id="syncGoals" class="wide secondary">Recalculate from My Health</button>
+<button id="toHealth" class="wide secondary">View in My Health</button>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>Coach</h3><span class="fine">rules, not a doctor</span></div>
+<div id="coach"></div>
+</div>
+</aside>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>Suggestions</h3><span class="fine">from your goals and filters</span></div>
+<div class="diet-filter" id="dietFilter"></div>
+<div id="suggestions"></div>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>Water</h3><span class="fine" id="waterGoal"></span></div>
+<div class="water-controls">
+<button class="glass" data-water="-1" aria-label="Remove a glass">−</button>
+<div class="water-count" id="waterCount">0</div>
+<button class="glass" data-water="1" aria-label="Add a glass">+</button>
+</div>
+<p class="fine" id="waterTip"></p>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>Health profile</h3><span class="fine">stored once, in My Health</span></div>
+<div id="healthLink"></div>
+<button id="toHealth2" class="wide secondary">Open My Health</button>
+</div>
+<dialog id="goalsDialog" class="edit-dialog">
+<form id="goalsForm" method="dialog">
+<h3>Food goals</h3>
+<p class="fine">Recalculated from your body profile in My Health, or set your own here.</p>
+<label class="field-label" for="gCalories">Calories (kcal)</label>
+<input id="gCalories" type="number" min="0" max="6000" step="10" inputmode="numeric">
+<label class="field-label" for="gProtein">Protein (g)</label>
+<input id="gProtein" type="number" min="0" max="400" step="1" inputmode="numeric">
+<label class="field-label" for="gCarbs">Carbohydrate (g)</label>
+<input id="gCarbs" type="number" min="0" max="800" step="1" inputmode="numeric">
+<label class="field-label" for="gFat">Fat (g)</label>
+<input id="gFat" type="number" min="0" max="300" step="1" inputmode="numeric">
+<label class="field-label" for="gWater">Water (L)</label>
+<input id="gWater" type="number" min="0" max="10" step="0.1" inputmode="decimal">
+<div class="edit-row">
+<div>
+<label class="field-label" for="gFruit">Fruit servings</label>
+<input id="gFruit" type="number" min="0" max="20" step="0.5" inputmode="decimal">
+</div>
+<div>
+<label class="field-label" for="gVeg">Veg servings</label>
+<input id="gVeg" type="number" min="0" max="20" step="0.5" inputmode="decimal">
+</div>
+</div>
+<label class="field-label" for="gWeight">Goal</label>
+<select id="gWeight">
+<option value="lose">Weight loss</option>
+<option value="maintain">Maintenance</option>
+<option value="gain">Weight gain</option>
+</select>
+<fieldset class="chips-box">
+<legend class="field-label">Health conditions</legend>
+<div id="condList" class="chips"></div>
+</fieldset>
+<fieldset class="chips-box">
+<legend class="field-label">Allergies</legend>
+<div id="allergenList" class="chips"></div>
+</fieldset>
+<fieldset class="chips-box">
+<legend class="field-label">Diet</legend>
+<div id="dietList" class="chips"></div>
+</fieldset>
+<label class="field-label" for="gCustom">Custom goal</label>
+<input id="gCustom" type="text" maxlength="40" placeholder="e.g. Take a walk">
+<p class="fine" id="customHint"></p>
+<div class="dialog-actions">
+<button value="cancel" class="secondary" type="submit" formnovalidate>Cancel</button>
+<button value="save" class="primary" type="submit">Save goals</button>
+</div>
+</form>
+</dialog>
+<dialog id="addFoodDialog" class="edit-dialog">
+<form id="addFoodForm" method="dialog">
+<h3 id="afTitle">Add food</h3>
+<label class="field-label" for="afQuery">Search</label>
+<input id="afQuery" type="search" autocomplete="off" placeholder="Search 13,911 foods">
+<div class="af-results" id="afResults" aria-live="polite"></div>
+<div id="afPicked"></div>
+<div class="dialog-actions">
+<button value="cancel" class="secondary" type="submit" formnovalidate>Close</button>
+</div>
+</form>
+</dialog>
+<dialog id="photoDialog" class="edit-dialog">
+<form id="photoForm" method="dialog">
+<h3>Meal photo</h3>
+<p class="fine">Stored on this device only, shrunk to a small thumbnail.</p>
+<label class="field-label" for="photoInput">Choose a photo</label>
+<input id="photoInput" type="file" accept="image/*">
+<div id="photoPreview"></div>
+<div class="dialog-actions">
+<button value="cancel" class="secondary" type="submit" formnovalidate>Remove photo</button>
+<button value="save" class="primary" type="submit">Save</button>
+</div>
+</form>
+</dialog>
+<button id="clearDay" class="danger">Clear this day</button>
+</section>
+<section id="health" role="tabpanel" aria-labelledby="tab-health" tabindex="0" class="panel hidden">
+<div class="section-head">
+<div>
+<span class="eyebrow">HEALTH DASHBOARD</span>
+<h2>See your own pattern</h2>
+<p>Record weight, blood pressure, exercise, sleep and water. All measurements stay only in this browser. HealthQ does not interpret readings.</p>
+</div>
+<div class="head-actions">
+<button id="healthExport" class="secondary">Export</button>
+</div>
+</div>
+<div class="health-summary">
+<div class="stat-card">
+<div class="stat-label">Weight trend</div>
+<div class="stat-value" id="hWeightTrend">—</div>
+<div class="stat-note" id="hWeightNote">No entries yet</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">BP category</div>
+<div class="stat-value" id="hBPTrend">—</div>
+<div class="stat-note" id="hBPNote">No readings yet</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Avg steps (7d)</div>
+<div class="stat-value" id="hStepsTrend">—</div>
+<div class="stat-note" id="hStepsNote">No exercise logged</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Avg sleep (7d)</div>
+<div class="stat-value" id="hSleepTrend">—</div>
+<div class="stat-note" id="hSleepNote">No sleep logged</div>
+</div>
+</div>
+<div class="health-grid">
+<div class="surface">
+<div class="surface-head"><h3>Body profile</h3><span class="fine">drives your targets</span></div>
+<p class="fine">Used to estimate your needs.</p>
+<form id="profileForm">
+<div class="input-row">
+<div>
+<label class="field-label" for="height">Height (cm)</label>
+<input id="height" type="number" min="50" max="260" step="0.5" inputmode="decimal" placeholder="e.g. 170">
+</div>
+<div>
+<label class="field-label" for="age">Age</label>
+<input id="age" type="number" min="10" max="120" step="1" inputmode="numeric" placeholder="e.g. 30">
+</div>
+</div>
+<label class="field-label" for="sex">Sex</label>
+<select id="sex">
+<option value="female">Female</option>
+<option value="male">Male</option>
+</select>
+<label class="field-label" for="activity">Activity level</label>
+<select id="activity">
+<option value="1.2">Sedentary — little exercise</option>
+<option value="1.375">Light — 1 to 3 days a week</option>
+<option value="1.55">Moderate — 3 to 5 days a week</option>
+<option value="1.725">Active — 6 to 7 days a week</option>
+<option value="1.9">Very active — physical job or twice daily</option>
+</select>
+<button class="primary wide" type="submit">Save profile</button>
+</form>
+<div id="profileOut"></div>
+</div>
+<aside class="surface">
+<div class="surface-head"><h3>Your targets</h3><span class="fine">from profile</span></div>
+<div id="targets"></div>
+</aside>
+</div>
+<div class="health-grid">
+<div class="surface">
+<div class="surface-head"><h3>Weight</h3><span class="fine">kg</span></div>
+<form id="weightForm">
+<label class="field-label" for="weight">Weight in kilograms</label>
+<div class="input-row">
+<input id="weight" type="number" min="1" max="500" step="0.1" required placeholder="e.g. 65.5">
+<button class="primary" type="submit">Save</button>
+</div>
+</form>
+<div id="weightChart"></div>
+<div id="weightList"></div>
+</div>
+<aside class="surface">
+<div class="surface-head"><h3>Blood pressure</h3><span class="fine">mmHg</span></div>
+<p class="fine">Enter readings from your own device.</p>
+<form id="pressureForm">
+<div class="input-row">
+<div>
+<label class="field-label" for="systolic">Systolic</label>
+<input id="systolic" type="number" min="50" max="300" required placeholder="mmHg">
+</div>
+<div>
+<label class="field-label" for="diastolic">Diastolic</label>
+<input id="diastolic" type="number" min="30" max="200" required placeholder="mmHg">
+</div>
+</div>
+<button class="primary wide" type="submit">Save reading</button>
+</form>
+<div id="pressureChart"></div>
+<div id="pressureList"></div>
+</aside>
+</div>
+<div class="health-grid">
+<div class="surface">
+<div class="surface-head"><h3>Exercise</h3><span class="fine">today</span></div>
+<form id="exerciseForm">
+<div class="input-row">
+<div>
+<label class="field-label" for="steps">Steps</label>
+<input id="steps" type="number" min="0" max="200000" step="1" inputmode="numeric" placeholder="0">
+</div>
+<div>
+<label class="field-label" for="activeMinutes">Active minutes</label>
+<input id="activeMinutes" type="number" min="0" max="1440" step="1" inputmode="numeric" placeholder="0">
+</div>
+</div>
+<label class="field-label" for="workout">Activity type</label>
+<select id="workout">
+<option>Walk</option>
+<option>Run</option>
+<option>Cycle</option>
+<option>Strength</option>
+<option>Yoga</option>
+<option>Swim</option>
+<option>Other</option>
+</select>
+<button class="primary wide" type="submit">Save exercise</button>
+</form>
+<div id="exerciseList"></div>
+</div>
+<aside class="surface">
+<div class="surface-head"><h3>Sleep</h3><span class="fine">last night</span></div>
+<form id="sleepForm">
+<label class="field-label" for="sleepHours">Hours slept</label>
+<input id="sleepHours" type="number" min="0" max="24" step="0.5" inputmode="decimal" placeholder="e.g. 7.5">
+<label class="field-label" for="sleepQuality">Quality</label>
+<select id="sleepQuality">
+<option>Poor</option>
+<option>Fair</option>
+<option>Good</option>
+<option>Great</option>
+</select>
+<button class="primary wide" type="submit">Save sleep</button>
+</form>
+<div id="sleepList"></div>
+</aside>
+</div>
+<div class="health-grid">
+
+<div class="health-grid">
+<div class="surface">
+<div class="surface-head"><h3>Body measurements & vitals</h3><span class="fine">manual entry</span></div>
+<p class="fine">What you enter, nothing more.</p>
+<form id="vitalsForm">
+<div class="input-row">
+<div>
+<label class="field-label" for="restHr">Resting heart rate</label>
+<input id="restHr" type="number" min="20" max="250" step="1" inputmode="numeric" placeholder="bpm">
+</div>
+<div>
+<label class="field-label" for="spo2">Blood oxygen (SpO2)</label>
+<input id="spo2" type="number" min="70" max="100" step="1" inputmode="numeric" placeholder="%">
+</div>
+</div>
+<div class="input-row">
+<div>
+<label class="field-label" for="glucose">Blood glucose</label>
+<input id="glucose" type="number" min="20" max="600" step="1" inputmode="numeric" placeholder="mg/dL">
+</div>
+<div>
+<label class="field-label" for="bodyFat">Body fat</label>
+<input id="bodyFat" type="number" min="2" max="70" step="0.1" inputmode="decimal" placeholder="%">
+</div>
+</div>
+<label class="field-label" for="waist">Waist circumference</label>
+<input id="waist" type="number" min="30" max="200" step="0.5" inputmode="decimal" placeholder="cm">
+<button class="primary wide" type="submit">Save reading</button>
+</form>
+<div id="vitalsList"></div>
+</div>
+<aside class="surface">
+<div class="surface-head"><h3>Today vs your targets</h3><span class="fine">progress</span></div>
+<div id="progress"></div>
+</aside>
+</div>
+<div class="surface weekly">
+<div class="surface-head"><h3>Last 7 days</h3><span class="fine">food, exercise, sleep</span></div>
+<div id="weekly"></div>
+</div>
+<aside class="surface">
+<div class="surface-head"><h3>Food ↔ health link</h3><span class="fine">today</span></div>
+<div id="foodLink"></div>
+</aside>
+</div>
+</section>
+<section id="account" role="tabpanel" aria-labelledby="tab-account" tabindex="0" class="panel hidden">
+<div class="section-head">
+<div>
+<span class="eyebrow">PROFILE &amp; DATA</span>
+<h2>Your account</h2>
+<p>Who you are, what is stored, and how to take control of it.</p>
+</div>
+</div>
+<div class="acct-layout">
+<div class="acct-main">
+<div class="surface" id="identityCard"></div>
+<div class="surface">
+<div class="surface-head"><h3>My data</h3><span class="fine" id="dataSize"></span></div>
+<p class="fine">Every item below is stored in this browser only. Nothing is sent to us or to anyone else.</p>
+<div id="dataInventory"></div>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>Manage</h3></div>
+<div class="acct-actions">
+<button id="acctExport" class="secondary">Download my data</button>
+<button id="acctImport" class="secondary">Restore from a backup</button>
+<button id="acctSignOut" class="secondary">Sign out of this device</button>
+<button id="acctDelete" class="danger">Delete everything</button>
+</div>
+<p class="fine">Download first if you might want your records later. Once deleted, they cannot be recovered from this device.</p>
+</div>
+</div>
+<aside class="acct-side">
+<div class="surface">
+<div class="surface-head"><h3>Where my information lives</h3></div>
+<div id="storageExplainer"></div>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>Health profile</h3><span class="fine" id="profileBadge"></span></div>
+<div id="healthStatus"></div>
+<button id="acctFinishSetup" class="wide secondary">Complete my profile</button>
+</div>
+<div class="surface">
+<div class="surface-head"><h3>What we do not collect</h3></div>
+<ul class="acct-list">
+<li>No email, phone or password</li>
+<li>No location or contacts</li>
+<li>No advertising or tracking identifiers</li>
+<li>No server copy of anything</li>
+</ul>
+</div>
+</aside>
+</div>
+<dialog id="signOutDialog" class="edit-dialog acct-dialog">
+<form method="dialog">
+<h3>Sign out of this device?</h3>
+<p class="fine" id="signOutExplain"></p>
+<div class="dialog-actions dialog-actions-split">
+<button value="cancel" class="secondary" type="submit" formnovalidate>Cancel</button>
+<button id="signOutConfirm" value="yes" class="primary" type="submit">Sign out</button>
+</div>
+</form>
+</dialog>
+<dialog id="deleteDialog" class="edit-dialog acct-dialog">
+<form method="dialog" id="deleteForm">
+<div id="deleteSteps"></div>
+</form>
+</dialog>
+<dialog id="welcomeBackDialog" class="edit-dialog acct-dialog">
+<form method="dialog">
+<h3>Thank you for being part of our community.</h3>
+<p class="fine">You are always welcome back. Your journey can continue anytime.</p>
+<div class="dialog-actions dialog-actions-split">
+<button id="welcomeExport" class="secondary" type="button">Download my data</button>
+<button id="welcomeDone" class="primary" type="submit">Close</button>
+</div>
+</form>
+</dialog>
+<input id="acctImportFile" type="file" accept="application/json,.json" hidden>
+</section>
+<section id="more" role="tabpanel" aria-labelledby="tab-more" tabindex="0" class="panel hidden">
+<div class="section-head">
+<div>
+<span class="eyebrow">NEXT CHAPTERS</span>
+<h2>More useful, step by step</h2>
+<p>Not built yet.</p>
+</div>
+</div>
+<div class="feature-grid">
+<article class="surface">
+<div class="feature-icon">▦</div>
+<h3>Scan food labels</h3>
+<p>Find packaged foods by barcode.</p>
+<span class="status">Planned</span>
+</article>
+<article class="surface">
+<div class="feature-icon">⌁</div>
+<h3>Connect devices</h3>
+<p>Connect your own devices.</p>
+<span class="status">Planned</span>
+</article>
+<article class="surface">
+<div class="feature-icon">✦</div>
+<h3>Shop with confidence</h3>
+<p>Compare before you buy.</p>
+<span class="status">Planned</span>
+</article>
+<article class="surface">
+<div class="feature-icon">✚</div>
+<h3>Professional care</h3>
+<p>Book verified clinicians.</p>
+<span class="status">Planned</span>
+</article>
+</div>
+<div class="surface privacy">
+<h3>Your information stays yours</h3>
+<p>Everything stays in this browser. Export or erase any time.</p>
+<div class="data-actions">
+<button id="export" class="secondary">Export my data</button>
+<button id="importBtn" class="secondary">Import a backup</button>
+<button id="openOnboarding" class="secondary">Finish setup</button>
+</div>
+<input id="importFile" type="file" accept="application/json,.json" hidden>
+<p class="fine" id="accountNote">HealthQ has no account system and no server. Your records live only in this browser, and nothing is sent anywhere. Signing in to sync across devices would need a backend first.</p>
+<button id="erase" class="danger">Erase all my records</button>
+</div>
+</section>
+</main>
+<button id="toTop" class="fab hidden" aria-label="Back to top">↑</button>
+<footer>
+<div class="foot-top">
+<span class="foot-brand">HealthQ</span>
+<span class="foot-tag">A practical daily companion</span>
+</div>
+<div class="foot-source" id="sourceNote">USDA FoodData Central source data. These are reference values for the exact named food, usually per 100 g; actual food can vary. Missing values are unknown, not zero. This app does not give medical advice.</div>
+<div class="foot-meta">
+<span id="offline">Available offline after first load</span>
+<span class="foot-dev">Developed by Quantum Leaf Automation · quantumla.it.com</span>
+</div>
+</footer>
+<dialog id="editDialog" class="edit-dialog">
+<form id="editForm" method="dialog">
+<h3 id="editTitle">Edit entry</h3>
+<p class="fine" id="editSource"></p>
+<label class="field-label" for="editGrams">Amount (grams)</label>
+<input id="editGrams" type="number" min="1" max="5000" step="1" inputmode="decimal" required>
+<div class="edit-row">
+<div>
+<label class="field-label" for="editMeal">Meal</label>
+<select id="editMeal">
+<option>Breakfast</option>
+<option>Lunch</option>
+<option>Snack</option>
+<option>Dinner</option>
+</select>
+</div>
+<div>
+<label class="field-label" for="editKcal">Custom calories (kcal)</label>
+<input id="editKcal" type="number" min="0" max="20000" step="1" inputmode="numeric" placeholder="from source">
+</div>
+</div>
+<p class="fine" id="editHint"></p>
+<div class="dialog-actions dialog-actions-split">
+<button id="editRemove" class="danger" type="button">Remove entry</button>
+<span class="dialog-actions-right">
+<button value="cancel" class="secondary" type="submit" formnovalidate>Cancel</button>
+<button id="editSave" value="save" class="primary" type="submit">Save changes</button>
+</span>
+</div>
+</form>
+</dialog>
+<div id="onboarding" class="onb" hidden>
+<div class="onb-card" role="dialog" aria-modal="true" aria-labelledby="onbTitle">
+<div class="onb-bar"><i id="onbProgress"></i></div>
+<p class="onb-step" id="onbStep">Step 1 of 4</p>
+<h2 id="onbTitle">Welcome to HealthQ</h2>
+<p class="onb-sub" id="onbSub">Look around first. Everything works without an account.</p>
+<div class="onb-body" id="onbBody"></div>
+<div class="onb-actions">
+<button type="button" id="onbSkip" class="link-btn">Skip for now</button>
+<span class="onb-nav">
+<button type="button" id="onbBack" class="secondary" hidden>Back</button>
+<button type="button" id="onbNext" class="primary">Continue</button>
+</span>
+</div>
+<p class="onb-foot" id="onbFoot">No account needed. Your data stays on this device.</p>
+</div>
+</div>
+
+<div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+<dialog id="confirm">
+<form method="dialog">
+<h3 id="confirmTitle">Confirm action</h3>
+<p id="confirmText">
+</p>
+<div class="dialog-actions">
+<button value="cancel" class="secondary">Cancel</button>
+<button value="yes" class="danger">Confirm</button>
+</div>
+</form>
+</dialog>
+<script type="module" src="./src/main.js">
+</script>
+</body>
+</html>

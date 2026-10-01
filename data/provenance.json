@@ -1,0 +1,71 @@
+{
+  "description": "HealthQ food catalogue",
+  "sources": [
+    {
+      "file": "data/newFoods.js",
+      "records": 11884,
+      "source": "USDA SR Legacy 2018 + FNDDS 2021-2023 + Foundation 2026 + Nepal DFTQC 2012"
+    },
+    {
+      "file": "data/newFruits.js",
+      "records": 551,
+      "source": "Fruit records (Nepal DFTQC + USDA), supersedes data/fruits.js"
+    },
+    {
+      "file": "data/newVegetables.js",
+      "records": 1501,
+      "source": "Vegetable records (Nepal DFTQC + USDA), supersedes data/vegetables.js"
+    },
+    {
+      "file": "data/foods.js",
+      "records": 10333,
+      "source": "USDA SR Legacy 2018, retained for index stability and backfill"
+    },
+    {
+      "file": "data/fruits.js",
+      "records": 491,
+      "source": "Legacy fruit set, backfill only"
+    },
+    {
+      "file": "data/vegetables.js",
+      "records": 1340,
+      "source": "Legacy vegetable set, backfill only"
+    },
+    {
+      "file": "data/nutrients.js",
+      "records": 474,
+      "source": "USDA FDC nutrient id to name and unit"
+    }
+  ],
+  "indexedRows": 24269,
+  "uniqueFoods": 13911,
+  "displayGroups": [
+    "Baby & Infant",
+    "Bakery & Breakfast",
+    "Dairy & Eggs",
+    "Drinks",
+    "Fats & Oils",
+    "Fruit",
+    "Grains & Pasta",
+    "Legumes & Soy",
+    "Meat & Seafood",
+    "Nuts & Seeds",
+    "Other",
+    "Restaurant & Prepared",
+    "Snacks",
+    "Soups, Sauces & Spices",
+    "Sweets",
+    "Vegetables"
+  ],
+  "license": "USDA: CC0 1.0 / Government of Nepal DFTQC Food Composition Table 2012",
+  "invariants": [
+    "foods[i].id === i. Original data/foods.js rows keep indices 0..10332 so saved day-log entries still resolve to the same food.",
+    "Duplicates are merged, never removed, so Nepali names and micronutrients survive.",
+    "195 raw source categories are collapsed into 16 display groups."
+  ],
+  "notes": [
+    "Values are per 100 g of the exact named food.",
+    "Missing values are null and shown as unknown, never zero.",
+    "Nepali names are search aliases, not a claim the food was measured in Nepal."
+  ]
+}
